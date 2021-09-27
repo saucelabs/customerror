@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -67,9 +68,17 @@ func (cE *CustomError) Unwrap() error {
 	return cE.Err
 }
 
-// Wrap `customError` around `err`.
-func Wrap(customError, err error) error {
-	return fmt.Errorf("%w. Wrapped Error: %s", customError, err)
+// Wrap `customError` around `errors`.
+func Wrap(customError error, errors ...error) error {
+	errMsgs := []string{}
+
+	for _, err := range errors {
+		if err != nil {
+			errMsgs = append(errMsgs, err.Error())
+		}
+	}
+
+	return fmt.Errorf("%w. Wrapped Error(s): %s", customError, strings.Join(errMsgs, ". "))
 }
 
 //////

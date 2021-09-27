@@ -267,7 +267,7 @@ func TestNew_deepNestedErrors(t *testing.T) {
 		t.Errorf("Expected %v be ErrLayered", errWrapped)
 	}
 
-	expectedErrWrappedMsg := "custom message. Original Error: layer 3. layer 2. layer 1. Wrapped Error: Some error"
+	expectedErrWrappedMsg := "custom message. Original Error: layer 3. layer 2. layer 1. Wrapped Error(s): Some error"
 
 	if errWrapped.Error() != expectedErrWrappedMsg {
 		t.Errorf("Expected %v to be %s", errWrapped.Error(), expectedErrWrappedMsg)
