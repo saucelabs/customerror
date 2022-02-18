@@ -60,8 +60,8 @@ func ExampleNew() {
 // Demonstrates how to create static, and dynamic custom errors, also how to
 // check, and instrospect custom errors.
 func ExampleNew_options() {
-	fmt.Println(NewMissingError("id", WithCode("E1010"), WithStatusCode(http.StatusOK), WithError(errors.New("some error"))))
+	fmt.Println(NewMissingError("id", WithCode("E1010"), WithStatusCode(http.StatusNotAcceptable), WithError(errors.New("some error"))))
 
 	// output:
-	// E1010: missing id (400 - Bad Request). Original Error: some error
+	// E1010: missing id (406 - Not Acceptable). Original Error: some error
 }

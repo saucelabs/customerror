@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Roadmap
 
+## [1.0.1] - 2022-02-18
+
+### Added
+
+- Added ability to pre-append `Option`s.
+
 ## [1.0.0] - 2022-02-17
 ### Added
 - Functional `Option`s.

@@ -18,7 +18,10 @@ import (
 //
 // Note: Status code can be redefined, call `SetStatusCode`.
 func NewFailedToError(message string, opts ...Option) error {
-	return New(fmt.Sprintf("failed to %s", message), append(opts, WithStatusCode(http.StatusInternalServerError))...)
+	return New(fmt.Sprintf("failed to %s", message), prependOptions(
+		opts,
+		WithStatusCode(http.StatusInternalServerError),
+	)...)
 }
 
 // NewInvalidError is the building block for errors usually thrown when
@@ -26,7 +29,10 @@ func NewFailedToError(message string, opts ...Option) error {
 //
 // Note: Status code can be redefined, call `SetStatusCode`.
 func NewInvalidError(message string, opts ...Option) error {
-	return New(fmt.Sprintf("invalid %s", message), append(opts, WithStatusCode(http.StatusBadRequest))...)
+	return New(fmt.Sprintf("invalid %s", message), prependOptions(
+		opts,
+		WithStatusCode(http.StatusBadRequest),
+	)...)
 }
 
 // NewMissingError is the building block for errors usually thrown when required
@@ -34,7 +40,10 @@ func NewInvalidError(message string, opts ...Option) error {
 //
 // Note: Status code can be redefined, call `SetStatusCode`.
 func NewMissingError(message string, opts ...Option) error {
-	return New(fmt.Sprintf("missing %s", message), append(opts, WithStatusCode(http.StatusBadRequest))...)
+	return New(fmt.Sprintf("missing %s", message), prependOptions(
+		opts,
+		WithStatusCode(http.StatusBadRequest),
+	)...)
 }
 
 // NewRequiredError is the building block for errors usually thrown when
@@ -43,5 +52,8 @@ func NewMissingError(message string, opts ...Option) error {
 //
 // Note: Status code can be redefined, call `SetStatusCode`.
 func NewRequiredError(message string, opts ...Option) error {
-	return New(fmt.Sprintf("%s required", message), append(opts, WithStatusCode(http.StatusBadRequest))...)
+	return New(fmt.Sprintf("%s required", message), prependOptions(
+		opts,
+		WithStatusCode(http.StatusBadRequest),
+	)...)
 }

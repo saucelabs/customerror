@@ -16,6 +16,17 @@ package customerror
 // Option allows to define error options.
 type Option func(s *CustomError)
 
+// Prepend options.
+func prependOptions(source []Option, item Option) []Option {
+	source = append(source, nil)
+
+	copy(source[1:], source)
+
+	source[0] = item
+
+	return source
+}
+
 // WithError allows to specify an error which will be wrapped by the custom
 // error.
 func WithError(err error) Option {
