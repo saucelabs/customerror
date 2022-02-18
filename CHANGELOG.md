@@ -7,16 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Roadmap
 
-## [0.0.2] - 2021-09-27
+## [1.0.0] - 2022-02-17
+### Added
+- Functional `Option`s.
 
 ### Changed
+- `New` now implements the functional optional pattern.
 
+### Removed
+- Removed `SetStatusCode`.
+
+## [0.0.2] - 2021-09-27
+### Changed
 - `Wrap` now accepts a list of errors.
 
 ## [0.0.1] - 2021-09-24
-
 ### Checklist
-
 - [x] CI Pipeline:
   - [x] Lint
   - [x] Tests
@@ -39,7 +45,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - [x] Example's test file
 
 ### Added
-
 - [x] Ability to create custom errors.
 - [x] Ability to create custom errors with code.
 - [x] Ability to create custom errors with status code.

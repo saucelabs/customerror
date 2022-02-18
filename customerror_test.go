@@ -25,12 +25,10 @@ var (
 )
 
 //nolint:lll
-func TestNew(t *testing.T) {
+func TestNewLowLevel(t *testing.T) {
 	type args struct {
-		message    string
-		code       string
-		statusCode int
-		err        error
+		message string
+		opts    []Option
 	}
 	tests := []struct {
 		name string
@@ -46,7 +44,7 @@ func TestNew(t *testing.T) {
 			name: "should work - with message, and code",
 			args: args{
 				message: failedCreateSomethingMsg,
-				code:    code,
+				opts:    []Option{WithCode(code)},
 			},
 			want: "E1010: Failed to create something",
 		},
@@ -54,7 +52,7 @@ func TestNew(t *testing.T) {
 			name: "should work - with message, and error",
 			args: args{
 				message: failedCreateSomethingMsg,
-				err:     ErrFailedToReachServer,
+				opts:    []Option{WithError(ErrFailedToReachServer)},
 			},
 			want: "Failed to create something. Original Error: Failed to reach servers",
 		},
@@ -62,15 +60,15 @@ func TestNew(t *testing.T) {
 			name: "should work - with message, and deep error",
 			args: args{
 				message: failedCreateSomethingMsg,
-				err:     ErrFailedToReachServerDeep,
+				opts:    []Option{WithError(ErrFailedToReachServerDeep)},
 			},
 			want: "Failed to create something. Original Error: Failed to reach servers. Servers are broken",
 		},
 		{
 			name: "should work - with message, and status code",
 			args: args{
-				message:    failedCreateSomethingMsg,
-				statusCode: statusCode,
+				message: failedCreateSomethingMsg,
+				opts:    []Option{WithStatusCode(statusCode)},
 			},
 			want: "Failed to create something (404 - Not Found)",
 		},
@@ -78,8 +76,7 @@ func TestNew(t *testing.T) {
 			name: "should work - with message, code, and error",
 			args: args{
 				message: failedCreateSomethingMsg,
-				code:    code,
-				err:     ErrFailedToReachServer,
+				opts:    []Option{WithCode(code), WithError(ErrFailedToReachServer)},
 			},
 			want: "E1010: Failed to create something. Original Error: Failed to reach servers",
 		},
@@ -87,38 +84,35 @@ func TestNew(t *testing.T) {
 			name: "should work - with message, code, error, and deep error",
 			args: args{
 				message: failedCreateSomethingMsg,
-				code:    code,
-				err:     ErrFailedToReachServerDeep,
+				opts:    []Option{WithCode(code), WithError(ErrFailedToReachServerDeep)},
 			},
 			want: "E1010: Failed to create something. Original Error: Failed to reach servers. Servers are broken",
 		},
 		{
 			name: "should work - with message, code, error, deep error, and status code",
 			args: args{
-				message:    failedCreateSomethingMsg,
-				code:       code,
-				statusCode: statusCode,
-				err:        ErrFailedToReachServerDeep,
+				message: failedCreateSomethingMsg,
+				opts:    []Option{WithCode(code), WithError(ErrFailedToReachServerDeep), WithStatusCode(statusCode)},
 			},
 			want: "E1010: Failed to create something (404 - Not Found). Original Error: Failed to reach servers. Servers are broken",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := New(tt.args.message, tt.args.code, tt.args.statusCode, tt.args.err)
+			got := New(tt.args.message, tt.args.opts...)
 
 			if !strings.EqualFold(got.Error(), tt.want) {
-				t.Errorf("New() = %v, want %v", got, tt.want)
+				t.Errorf("NewLowLevel() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
 func TestBuiltin(t *testing.T) {
-	ErrFailedToCreateFile := NewFailedToError("create file", "", nil)
-	ErrInvalidPath := NewInvalidError("path", "", nil)
-	ErrMissingPath := NewMissingError("path", "", nil)
-	ErrRequiredPath := NewRequiredError("path is", "", nil)
+	ErrFailedToCreateFile := NewFailedToError("create file")
+	ErrInvalidPath := NewInvalidError("path")
+	ErrMissingPath := NewMissingError("path")
+	ErrRequiredPath := NewRequiredError("path is")
 
 	testFunc := func(e error) error { return e }
 
@@ -246,7 +240,7 @@ func TestNew_deepNestedErrors(t *testing.T) {
 
 	layer3 := fmt.Errorf("layer 3. %w", layer2)
 
-	ErrLayered := New("custom message", "", 0, layer3)
+	ErrLayered := New("custom message", WithError(layer3))
 	if ErrLayered.Error() != expectedErrMsg {
 		t.Errorf("CustomError deep nested errors got %s, want %s", ErrLayered, expectedErrMsg)
 	}
@@ -284,7 +278,7 @@ func TestWrap(t *testing.T) {
 
 	layer3 := fmt.Errorf("layer 3. %w", layer2)
 
-	ErrLayered := New("custom message", "", 0, layer3)
+	ErrLayered := New("custom message", WithError(layer3))
 	if ErrLayered.Error() != expectedErrMsg {
 		t.Errorf("Wrap got %s, want %s", ErrLayered, expectedErrMsg)
 	}
@@ -301,50 +295,5 @@ func TestWrap(t *testing.T) {
 
 	if !errors.Is(Wrap(errLayered, errSome), ErrLayered) {
 		t.Errorf("Wrap Is got %s, want %s", errSome, ErrLayered)
-	}
-}
-
-func TestCustomError_SetStatusCode(t *testing.T) {
-	type fields struct {
-		Code       string
-		Err        error
-		Message    string
-		StatusCode int
-	}
-	type args struct {
-		code int
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   *CustomError
-	}{
-		{
-			name: "Should work",
-			fields: fields{
-				Code:       "",
-				Err:        nil,
-				Message:    "test",
-				StatusCode: 0,
-			},
-			args: args{
-				code: 400,
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			cE := New(
-				tt.fields.Message,
-				tt.fields.Code,
-				tt.fields.StatusCode,
-				tt.fields.Err,
-			).SetStatusCode(tt.args.code)
-
-			if cE.StatusCode != tt.args.code {
-				t.Errorf("CustomError.SetStatusCode() = %v, want %v", cE.StatusCode, tt.args.code)
-			}
-		})
 	}
 }

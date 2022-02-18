@@ -34,16 +34,6 @@ type CustomError struct {
 // Error interface implementation.
 //////
 
-// SetStatusCode sets the status code.
-//
-// Note: Calling this on a static error is dangerous as it will change the
-// status code of all its references!
-func (cE *CustomError) SetStatusCode(code int) *CustomError {
-	cE.StatusCode = code
-
-	return cE
-}
-
 // Error interface implementation returns the properly formatted error message.
 func (cE *CustomError) Error() string {
 	errMsg := cE.Message
@@ -68,6 +58,13 @@ func (cE *CustomError) Unwrap() error {
 	return cE.Err
 }
 
+// Is interface implementation ensures chain continuity. Treats `CustomError` as
+// equivalent to `err`.
+//nolint:errorlint
+func (cE CustomError) Is(err error) bool {
+	return cE.Err == err
+}
+
 // Wrap `customError` around `errors`.
 func Wrap(customError error, errors ...error) error {
 	errMsgs := []string{}
@@ -85,14 +82,14 @@ func Wrap(customError error, errors ...error) error {
 // Factory.
 //////
 
-// New creates custom errors. `message` is required. Failing to satisfy that
-// will throw a fatal error.
-func New(message, code string, statusCode int, err error) *CustomError {
+// New is the custom error factory.
+func New(message string, opts ...Option) error {
 	cE := &CustomError{
-		Code:       code,
-		Message:    message,
-		Err:        err,
-		StatusCode: statusCode,
+		Message: message,
+	}
+
+	for _, opt := range opts {
+		opt(cE)
 	}
 
 	if err := validator.New().Struct(cE); err != nil {

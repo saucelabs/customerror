@@ -7,13 +7,14 @@ package customerror
 import (
 	"errors"
 	"fmt"
+	"net/http"
 )
 
 // Demonstrates how to create static, and dynamic custom errors, also how to
 // check, and instrospect custom errors.
 func ExampleNew() {
 	// Custom static error definition.
-	ErrMissingID := NewMissingError("id", "E1010", nil)
+	ErrMissingID := NewMissingError("id", WithCode("E1010"))
 
 	// Some function, for demo purpose.
 	SomeFunc := func(id string) error {
@@ -23,7 +24,7 @@ func ExampleNew() {
 		}
 
 		// Dynamic custom error.
-		return NewFailedToError("write to disk", "E1523", nil)
+		return NewFailedToError("write to disk", WithCode("E1523"))
 	}
 
 	// Case: Without `id`, returns `ErrMissingID`.
@@ -54,4 +55,13 @@ func ExampleNew() {
 	// E1010: missing id (400 - Bad Request)
 	// 500
 	// E1523: failed to write to disk (500 - Internal Server Error)
+}
+
+// Demonstrates how to create static, and dynamic custom errors, also how to
+// check, and instrospect custom errors.
+func ExampleNew_options() {
+	fmt.Println(NewMissingError("id", WithCode("E1010"), WithStatusCode(http.StatusOK), WithError(errors.New("some error"))))
+
+	// output:
+	// E1010: missing id (400 - Bad Request). Original Error: some error
 }
