@@ -24,7 +24,6 @@ var (
 	ErrFailedToReachServerDeepRev = fmt.Errorf("%s. %w", errors.New("servers are broken"), ErrFailedToReachServer)
 )
 
-//nolint:lll
 func TestNewLowLevel(t *testing.T) {
 	type args struct {
 		message string
@@ -70,7 +69,7 @@ func TestNewLowLevel(t *testing.T) {
 				message: failedCreateSomethingMsg,
 				opts:    []Option{WithStatusCode(statusCode)},
 			},
-			want: "Failed to create something (404 - Not Found)",
+			want: "Failed to create something",
 		},
 		{
 			name: "should work - with message, code, and error",
@@ -94,7 +93,7 @@ func TestNewLowLevel(t *testing.T) {
 				message: failedCreateSomethingMsg,
 				opts:    []Option{WithCode(code), WithError(ErrFailedToReachServerDeep), WithStatusCode(statusCode)},
 			},
-			want: "E1010: Failed to create something (404 - Not Found). Original Error: Failed to reach servers. Servers are broken",
+			want: "E1010: Failed to create something. Original Error: Failed to reach servers. Servers are broken",
 		},
 	}
 	for _, tt := range tests {
@@ -130,7 +129,7 @@ func TestBuiltin(t *testing.T) {
 			args: args{
 				err: ErrFailedToCreateFile,
 			},
-			want:   "failed to create file (500 - Internal Server Error)",
+			want:   "failed to create file",
 			wantAs: "failed to create file",
 		},
 		{
@@ -138,7 +137,7 @@ func TestBuiltin(t *testing.T) {
 			args: args{
 				err: ErrInvalidPath,
 			},
-			want:   "invalid path (400 - Bad Request)",
+			want:   "invalid path",
 			wantAs: "invalid path",
 		},
 		{
@@ -146,7 +145,7 @@ func TestBuiltin(t *testing.T) {
 			args: args{
 				err: ErrMissingPath,
 			},
-			want:   "missing path (400 - Bad Request)",
+			want:   "missing path",
 			wantAs: "missing path",
 		},
 		{
@@ -154,7 +153,7 @@ func TestBuiltin(t *testing.T) {
 			args: args{
 				err: ErrRequiredPath,
 			},
-			want:   "path is required (400 - Bad Request)",
+			want:   "path is required",
 			wantAs: "path is required",
 		},
 	}

@@ -52,15 +52,18 @@ func ExampleNew() {
 	// output:
 	// true
 	// 400
-	// E1010: missing id (400 - Bad Request)
+	// E1010: missing id
 	// 500
-	// E1523: failed to write to disk (500 - Internal Server Error)
+	// E1523: failed to write to disk
 }
 
 // Demonstrates how to create static, and dynamic custom errors, also how to
 // check, and instrospect custom errors.
+//nolint:errorlint
 func ExampleNew_options() {
-	fmt.Println(NewMissingError("id", WithCode("E1010"), WithStatusCode(http.StatusNotAcceptable), WithError(errors.New("some error"))))
+	fmt.Println(
+		NewMissingError("id", WithCode("E1010"), WithStatusCode(http.StatusNotAcceptable), WithError(errors.New("some error"))).(*CustomError).APIError(),
+	)
 
 	// output:
 	// E1010: missing id (406 - Not Acceptable). Original Error: some error

@@ -42,6 +42,21 @@ func (cE *CustomError) Error() string {
 		errMsg = fmt.Sprintf("%s: %s", cE.Code, errMsg)
 	}
 
+	if cE.Err != nil {
+		errMsg = fmt.Errorf("%s. Original Error: %w", errMsg, cE.Err).Error()
+	}
+
+	return errMsg
+}
+
+// APIError is like error plus status code information.
+func (cE *CustomError) APIError() string {
+	errMsg := cE.Message
+
+	if cE.Code != "" {
+		errMsg = fmt.Sprintf("%s: %s", cE.Code, errMsg)
+	}
+
 	if cE.StatusCode != 0 {
 		errMsg = fmt.Sprintf("%s (%d - %s)", errMsg, cE.StatusCode, http.StatusText(cE.StatusCode))
 	}
