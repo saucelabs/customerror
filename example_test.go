@@ -68,3 +68,15 @@ func ExampleNew_options() {
 	// output:
 	// E1010: missing id (406 - Not Acceptable). Original Error: some error
 }
+
+// Demonstrates error chain. `errB` will wrap `errA` and will be considered the
+// same by propagating the chain.
+func ExampleNew_is() {
+	errA := NewMissingError("id")
+	errB := NewMissingError("name", WithError(errA))
+
+	fmt.Println(errors.Is(errB, errA))
+
+	// output:
+	// true
+}
