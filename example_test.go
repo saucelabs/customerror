@@ -59,7 +59,8 @@ func ExampleNew() {
 
 // Demonstrates how to create static, and dynamic custom errors, also how to
 // check, and instrospect custom errors.
-//nolint:errorlint
+//
+//nolint:errorlint,forcetypeassert
 func ExampleNew_options() {
 	fmt.Println(
 		NewMissingError("id", WithCode("E1010"), WithStatusCode(http.StatusNotAcceptable), WithError(errors.New("some error"))).(*CustomError).APIError(),
