@@ -267,7 +267,6 @@ func TestNew_deepNestedErrors(t *testing.T) {
 	}
 }
 
-//nolint:ifshort
 func TestWrap(t *testing.T) {
 	expectedErrMsg := "custom message. Original Error: layer 3. layer 2. layer 1"
 
